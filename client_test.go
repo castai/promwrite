@@ -119,7 +119,7 @@ func TestClient(t *testing.T) {
 			r.NoError(err)
 			receivedWriteRequest <- parsed
 			receivedHeaders <- req.Header
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusAccepted)
 		}))
 		defer srv.Close()
 

@@ -118,7 +118,7 @@ func (p *Client) Write(ctx context.Context, req *WriteRequest, options ...WriteO
 	}
 	defer httpResp.Body.Close()
 
-	if st := httpResp.StatusCode; st != http.StatusOK {
+	if st := httpResp.StatusCode; st/100 != 2 {
 		msg, _ := ioutil.ReadAll(httpResp.Body)
 		return nil, &WriteError{
 			err:  fmt.Errorf("promwrite: expected status %d, got %d: %s", http.StatusOK, st, string(msg)),
