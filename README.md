@@ -10,7 +10,7 @@ go get -u github.com/anjmao/promwrite
 
 ### Example Usage
 
-```
+```go
 client := promwrite.NewClient("http://prometheus:8428/api/v1/write")
 resp, err := client.Write(context.Background(), &promwrite.WriteRequest{
 	TimeSeries: []promwrite.TimeSeries{
