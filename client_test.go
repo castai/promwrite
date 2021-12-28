@@ -13,8 +13,8 @@ import (
 	"github.com/golang/snappy"
 	"github.com/stretchr/testify/require"
 
-	"github.com/anjmao/promwrite"
-	"github.com/anjmao/promwrite/prompb"
+	"github.com/castai/promwrite"
+	"github.com/castai/promwrite/prompb"
 )
 
 func TestClient(t *testing.T) {

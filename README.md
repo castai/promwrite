@@ -5,7 +5,7 @@ Prometheus Remote Write Go client with minimal dependencies. Supports Prometheus
 ### Install
 
 ```
-go get -u github.com/anjmao/promwrite
+go get -u github.com/castai/promwrite
 ```
 
 ### Example Usage

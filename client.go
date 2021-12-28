@@ -11,7 +11,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/snappy"
 
-	"github.com/anjmao/promwrite/prompb"
+	"github.com/castai/promwrite/prompb"
 )
 
 type TimeSeries struct {

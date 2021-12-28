@@ -1,4 +1,4 @@
-module github.com/anjmao/promwrite
+module github.com/castai/promwrite
 
 go 1.17
 
