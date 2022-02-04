@@ -13,8 +13,9 @@ import (
 	"github.com/golang/snappy"
 	"github.com/stretchr/testify/require"
 
+	"github.com/prometheus/prometheus/prompb"
+
 	"github.com/castai/promwrite"
-	"github.com/castai/promwrite/prompb"
 )
 
 func TestClient(t *testing.T) {
@@ -74,8 +75,8 @@ func TestClient(t *testing.T) {
 
 		res := <-receivedWriteRequest
 		r.Len(res.Timeseries, 2)
-		r.Equal(prompb.TimeSeries{
-			Labels: []prompb.Label{
+		r.Equal(&prompb.TimeSeries{
+			Labels: []*prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_a",
@@ -92,8 +93,8 @@ func TestClient(t *testing.T) {
 				},
 			},
 		}, res.Timeseries[0])
-		r.Equal(prompb.TimeSeries{
-			Labels: []prompb.Label{
+		r.Equal(&prompb.TimeSeries{
+			Labels: []*prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_b",
@@ -160,8 +161,8 @@ func TestClient(t *testing.T) {
 
 		res := <-receivedWriteRequest
 		r.Len(res.Timeseries, 1)
-		r.Equal(prompb.TimeSeries{
-			Labels: []prompb.Label{
+		r.Equal(&prompb.TimeSeries{
+			Labels: []*prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_a",
