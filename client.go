@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -119,7 +119,7 @@ func (p *Client) Write(ctx context.Context, req *WriteRequest, options ...WriteO
 	defer httpResp.Body.Close()
 
 	if st := httpResp.StatusCode; st/100 != 2 {
-		msg, _ := ioutil.ReadAll(httpResp.Body)
+		msg, _ := io.ReadAll(httpResp.Body)
 		return nil, &WriteError{
 			err:  fmt.Errorf("promwrite: expected status %d, got %d: %s", http.StatusOK, st, string(msg)),
 			code: st,
@@ -128,17 +128,17 @@ func (p *Client) Write(ctx context.Context, req *WriteRequest, options ...WriteO
 	return &WriteResponse{}, nil
 }
 
-func toProtoTimeSeries(timeSeries []TimeSeries) []*prompb.TimeSeries {
-	res := make([]*prompb.TimeSeries, len(timeSeries))
+func toProtoTimeSeries(timeSeries []TimeSeries) []prompb.TimeSeries {
+	res := make([]prompb.TimeSeries, len(timeSeries))
 	for i, ts := range timeSeries {
-		labels := make([]*prompb.Label, len(ts.Labels))
+		labels := make([]prompb.Label, len(ts.Labels))
 		for j, lb := range ts.Labels {
-			labels[j] = &prompb.Label{
+			labels[j] = prompb.Label{
 				Name:  lb.Name,
 				Value: lb.Value,
 			}
 		}
-		pbTs := &prompb.TimeSeries{
+		pbTs := prompb.TimeSeries{
 			Labels: labels,
 			Samples: []prompb.Sample{{
 				// Timestamp for remote write should be in milliseconds.

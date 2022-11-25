@@ -3,6 +3,7 @@ package promwrite_test
 import (
 	"context"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +25,7 @@ func TestClient(t *testing.T) {
 
 		receivedWriteRequest := make(chan *prompb.WriteRequest, 1)
 		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			b, _ := ioutil.ReadAll(req.Body)
+			b, _ := io.ReadAll(req.Body)
 			parsed, err := parseWriteRequest(b)
 			r.NoError(err)
 			receivedWriteRequest <- parsed
@@ -75,8 +76,8 @@ func TestClient(t *testing.T) {
 
 		res := <-receivedWriteRequest
 		r.Len(res.Timeseries, 2)
-		r.Equal(&prompb.TimeSeries{
-			Labels: []*prompb.Label{
+		r.Equal(prompb.TimeSeries{
+			Labels: []prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_a",
@@ -93,8 +94,8 @@ func TestClient(t *testing.T) {
 				},
 			},
 		}, res.Timeseries[0])
-		r.Equal(&prompb.TimeSeries{
-			Labels: []*prompb.Label{
+		r.Equal(prompb.TimeSeries{
+			Labels: []prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_b",
@@ -161,8 +162,8 @@ func TestClient(t *testing.T) {
 
 		res := <-receivedWriteRequest
 		r.Len(res.Timeseries, 1)
-		r.Equal(&prompb.TimeSeries{
-			Labels: []*prompb.Label{
+		r.Equal(prompb.TimeSeries{
+			Labels: []prompb.Label{
 				{
 					Name:  "__name__",
 					Value: "metric_a",
