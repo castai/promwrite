@@ -39,13 +39,28 @@ func HttpClient(client *http.Client) ClientOption {
 	}
 }
 
+// HttpClient option with basic auth
+func HttpClientWithAuth(client *http.Client, auth *BasicAuth) ClientOption {
+	return func(opts *clientOptions) {
+		opts.httpClient = client
+		opts.BasicAuth = auth
+	}
+}
+
 type clientOptions struct {
 	httpClient *http.Client
+	BasicAuth  *BasicAuth
+}
+
+type BasicAuth struct {
+	UserName string
+	PassWord string
 }
 
 func NewClient(endpoint string, options ...ClientOption) *Client {
 	opts := clientOptions{
 		httpClient: &http.Client{Timeout: 30 * time.Second},
+		BasicAuth:  &BasicAuth{},
 	}
 	for _, opt := range options {
 		opt(&opts)
@@ -107,6 +122,7 @@ func (p *Client) Write(ctx context.Context, req *WriteRequest, options ...WriteO
 	httpReq.Header.Add("X-Prometheus-Remote-Write-Version", "0.1.0")
 	httpReq.Header.Add("Content-Encoding", "snappy")
 	httpReq.Header.Set("Content-Type", "application/x-protobuf")
+	httpReq.SetBasicAuth(p.opts.BasicAuth.UserName, p.opts.BasicAuth.PassWord)
 	for k, v := range opts.headers {
 		httpReq.Header.Add(k, v)
 	}
