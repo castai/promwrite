@@ -85,14 +85,25 @@ type WriteResponse struct {
 
 // Write sends HTTP requests to Prometheus Remote Write compatible API endpoint including Prometheus, Cortex and VictoriaMetrics.
 func (p *Client) Write(ctx context.Context, req *WriteRequest, options ...WriteOption) (*WriteResponse, error) {
+	return p.internalWrite(ctx, &prompb.WriteRequest{
+		Timeseries: toProtoTimeSeries(req.TimeSeries),
+	}, options...)
+}
+
+// WriteProto sends HTTP requests to Prometheus Remote Write compatible API endpoint including Prometheus, Cortex and VictoriaMetrics.
+// The difference between Write and WriteProto is that WriteProto allows you to write the full prompb.WriteRequest, which supports all metrics.
+func (p *Client) WriteProto(ctx context.Context, req *prompb.WriteRequest, options ...WriteOption) (*WriteResponse, error) {
+	return p.internalWrite(ctx, req, options...)
+}
+
+// Write sends HTTP requests to Prometheus Remote Write compatible API endpoint including Prometheus, Cortex and VictoriaMetrics.
+func (p *Client) internalWrite(ctx context.Context, req *prompb.WriteRequest, options ...WriteOption) (*WriteResponse, error) {
 	opts := writeOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
 	// Marshal proto and compress.
-	pbBytes, err := proto.Marshal(&prompb.WriteRequest{
-		Timeseries: toProtoTimeSeries(req.TimeSeries),
-	})
+	pbBytes, err := proto.Marshal(req)
 	if err != nil {
 		return nil, fmt.Errorf("promwrite: marshaling remote write request proto: %w", err)
 	}
